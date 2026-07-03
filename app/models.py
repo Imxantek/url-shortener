@@ -6,7 +6,7 @@ db=SQLAlchemy()
 class Urls(db.Model):
     __tablename__ = 'urls'
     full_url = db.Column(db.String(500), primary_key=True)
-    short_url = db.Column(db.String(500), nullable=False)
+    short_url = db.Column(db.String(500), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     analytics=db.relationship('Analytics', backref='urls', lazy=True)
