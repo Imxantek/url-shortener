@@ -2,11 +2,13 @@ import os
 from models import *
 from api import api_bp
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 def create_app():
     load_dotenv()
     CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__)
+    CORS(app)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False

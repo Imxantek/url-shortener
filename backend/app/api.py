@@ -25,8 +25,8 @@ def redirect_to_url(short_url):
     elif ip_ad=="127.0.0.1":
         country = "Localhost (Test)"
     try:
-        validated_data=schemas.Analytics(full_url=redir.full_url, click_time=datetime.now(timezone.utc), country=country, browser=user_agent)
-        new_analytic=Analytics(full_url=validated_data.full_url, click_time=validated_data.click_time, country=validated_data.country, browser=validated_data.browser)
+        validated_data= schemas.Analytics(short_url=redir.short_url, click_time=datetime.now(timezone.utc), country=country, browser=user_agent)
+        new_analytic=Analytics(short_url=validated_data.short_url, click_time=validated_data.click_time, country=validated_data.country, browser=validated_data.browser)
         db.session.add(new_analytic)
         try:
             db.session.commit()
@@ -44,7 +44,7 @@ def shorten():
     if not data or "full_url" not in data:
         return jsonify({"error": "No full_url provided"}), 400
     try:
-        validated_data=schemas.Url(full_url=data["full_url"], short_url="")
+        validated_data= schemas.Url(full_url=data["full_url"], short_url="")
     except Exception as e:
         return jsonify({"error": "error while validating data", "details": str(e)}), 400
 
@@ -68,3 +68,15 @@ def shorten():
 def analytics(short_url):
     if not short_url:
         abort(404)
+
+    query=Analytics.query.filter_by(short_url=short_url).all()
+
+    if not query:
+        return jsonify({"error": "Invalid link"}), 400
+    countries, browsers, click_times=[],[],[]
+    for row in query:
+        countries.append(row.country)
+        browsers.append(row.browser)
+        click_times.append(row.click_time)
+    return jsonify({"countries": countries, "browsers": browsers, "click_times": click_times}), 200
+
