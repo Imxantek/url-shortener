@@ -4,3 +4,5 @@ python-dotenv
 pymysql
 validators
 pydantic
+requests
+flask-cors

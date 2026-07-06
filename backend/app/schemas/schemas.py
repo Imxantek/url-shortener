@@ -12,13 +12,14 @@ class Url(BaseModel):
             raise ValueError('Url must not be None')
         else:
             if validators.domain(v):
-                v = "http://" + v
+                v = "https://" + v
+                full_url = v
             if not validators.url(v):
                 raise ValueError('Url must be a valid URL')
         return v
 
 class Analytics(BaseModel):
-    full_url: str
+    short_url: str
     click_time: datetime | None = None
     country: str | None = None
     browser: str | None = None

@@ -14,7 +14,7 @@ class Urls(db.Model):
 class Analytics(db.Model):
     __tablename__ = 'analytics'
     aID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    full_url = db.Column(db.String(500), db.ForeignKey('urls.full_url'), nullable=False)
+    short_url = db.Column(db.String(500), db.ForeignKey('urls.short_url'), nullable=False)
     click_time = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     country = db.Column(db.String(30))
     browser = db.Column(db.String(50))
