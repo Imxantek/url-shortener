@@ -1,16 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { Analytics } from './Analytics.tsx'
 import './App.css'
 
-function App() {
-  const [fullUrl, setFullUrl]=useState('')
-  const [shortUrl, setShortUrl]=useState('')
-  const pgName=useState('http://127.0.0.1:5000')
-  const [badResp, setBadResp]=useState(false)
-  const handleShorten = async(e: React.FormEvent) => {
-      console.log("this is the api command: ")
-      console.log(pgName[0].concat("/api/v1/shorten"))
+function Home() {
+    const [fullUrl, setFullUrl]=useState(()=> {return localStorage.getItem('saved_full_url')||'';});
+    const [shortUrl, setShortUrl]=useState(()=>{return localStorage.getItem('saved_short_url') ||'';});
+    useEffect(()=> {
+        localStorage.setItem('saved_full_url', fullUrl);
+    },[fullUrl]);
+    useEffect(()=> {
+        localStorage.setItem('saved_short_url', shortUrl);
+    },[shortUrl]);
+    const pgName='http://127.0.0.1:5000';
+    const [badResp, setBadResp]=useState(false);
+
+  const handleShorten = async() => {
       try{
-          const response = await fetch(pgName[0].concat("/api/v1/shorten"),{
+          const response = await fetch(pgName+"/api/v1/shorten", {
               method: 'POST',
               headers: {
                     'Content-Type': 'application/json'
@@ -20,28 +27,29 @@ function App() {
 
           if (response.ok){
               const data = await response.json();
-              setShortUrl(pgName[0].concat('/', data.short_url));
+              setShortUrl(pgName+'/'+data.short_url);
               }
           else{
               setBadResp(true)
               console.error("Backend error!")
               }
-          }catch (error){
-              console.error("Error while connecting to the server!")
-              }
-      };
+      }
+      catch (error){
+          console.error("Error while connecting to the server!")
+      }
+  };
+
+  const shortCode = shortUrl.split('/').pop();
 
   return (
-    <>
-      <div>
-            <p>Shortify - Shorten any link you want!</p>
-            <form
-
+      <div className="main-container">
+                <h2>Shortify - Shorten any link you want!</h2>
+                <form
                 onSubmit={(e)=>{
                     setShortUrl('')
                     setBadResp(false)
                     e.preventDefault();
-                    handleShorten(e);
+                    handleShorten();
                     }}>
                 <input
                     type="text"
@@ -54,21 +62,37 @@ function App() {
                 >
                     Shortify!
                 </button>
-            </form>
-            {shortUrl &&
-                <div>
-                    <p>This is your shortified link:</p>
-                    <a href={shortUrl}>{shortUrl}</a>
-                </div>
-                }
-            {badResp &&
-                <div>
-                    <p>Error: this is not a valid link</p>
-                </div>
-                }
+          </form>
+          <div className="sub-container">
+                {shortUrl &&
+                    <div>
+                        <p>This is your shortified link:</p>
+                        <a href={shortUrl} target="_blank">{shortUrl}</a>
+                        <Link to={"/stats/"+shortCode}>
+                            <button style={{marginLeft: "10px"}}>View Stats</button>
+                        </Link>
+                    </div>
+                    }
+                {badResp &&
+                    <div className="err-txt">
+                        <p>Error: this is not a valid link</p>
+                    </div>
+                    }
+          </div>
       </div>
-    </>
   )
+}
+
+
+function App(){
+    return(
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/stats/:shortCode' element={<Analytics />}/>
+            </Routes>
+        </BrowserRouter>
+    )
 }
 
 export default App

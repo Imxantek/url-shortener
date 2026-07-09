@@ -1,8 +1,12 @@
+from datetime import timedelta
+
 from flask import Blueprint, abort, redirect, request, jsonify
+from sqlalchemy import func
 import requests
 from models import *
 from services.shortener import create_hash
 from schemas import schemas
+from user_agents import parse
 
 api_bp=Blueprint('api', __name__)
 @api_bp.route("/<string:short_url>", methods=['GET'])
@@ -12,6 +16,7 @@ def redirect_to_url(short_url):
         abort(404)
     ip_ad=request.remote_addr
     user_agent = request.user_agent.string
+    clean_browser=parse(user_agent).browser.family
     country = None
     if ip_ad and ip_ad!="127.0.0.1":
         try:
@@ -25,7 +30,7 @@ def redirect_to_url(short_url):
     elif ip_ad=="127.0.0.1":
         country = "Localhost (Test)"
     try:
-        validated_data= schemas.Analytics(short_url=redir.short_url, click_time=datetime.now(timezone.utc), country=country, browser=user_agent)
+        validated_data= schemas.Analytics(short_url=redir.short_url, click_time=datetime.now(timezone.utc), country=country, browser=clean_browser)
         new_analytic=Analytics(short_url=validated_data.short_url, click_time=validated_data.click_time, country=validated_data.country, browser=validated_data.browser)
         db.session.add(new_analytic)
         try:
@@ -69,14 +74,41 @@ def analytics(short_url):
     if not short_url:
         abort(404)
 
-    query=Analytics.query.filter_by(short_url=short_url).all()
+    total_clicks=db.session.query(func.count(Analytics.aID)).filter_by(short_url=short_url).scalar()
 
-    if not query:
-        return jsonify({"error": "Invalid link"}), 400
-    countries, browsers, click_times=[],[],[]
-    for row in query:
-        countries.append(row.country)
-        browsers.append(row.browser)
-        click_times.append(row.click_time)
-    return jsonify({"countries": countries, "browsers": browsers, "click_times": click_times}), 200
+    if not total_clicks:
+        return jsonify({"error": "Invalid link, or no clicks yet"}), 400
+
+    countries_query=(db.session.query(
+        Analytics.country,
+        func.count(Analytics.aID)
+    ).filter_by(short_url=short_url).group_by(Analytics.country).all())
+
+    countries={country: count for country, count in countries_query}
+
+    browsers_query = db.session.query(
+        Analytics.browser,
+        func.count(Analytics.aID)
+    ).filter_by(short_url=short_url).group_by(Analytics.browser).all()
+
+    browsers = {browser: count for browser, count in browsers_query}
+
+    week_ago=datetime.now()-timedelta(days=7)
+
+    clicks_query=db.session.query(
+        func.date(Analytics.click_time),
+        func.count(Analytics.aID)
+    ).filter(
+        Analytics.short_url==short_url,
+        Analytics.click_time>=week_ago
+    ).group_by(func.date(Analytics.click_time)).all()
+
+    click_times={str(click): count for click, count in clicks_query}
+
+
+    return jsonify({"short_url": short_url,
+                    "total_clicks": total_clicks,
+                    "countries": countries,
+                    "browsers": browsers,
+                    "click_times": click_times}), 200
 
