@@ -1,8 +1,0 @@
-Flask-SQLAlchemy~=3.1.1
-flask
-python-dotenv
-pymysql
-validators
-pydantic
-requests
-flask-cors
