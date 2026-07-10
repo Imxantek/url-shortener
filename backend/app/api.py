@@ -1,12 +1,12 @@
 from datetime import timedelta
-
 from flask import Blueprint, abort, redirect, request, jsonify
 from sqlalchemy import func
-import requests
 from models import *
 from services.shortener import create_hash
 from schemas import schemas
 from user_agents import parse
+import requests
+import ipaddress
 
 api_bp=Blueprint('api', __name__)
 @api_bp.route("/<string:short_url>", methods=['GET'])
@@ -18,17 +18,19 @@ def redirect_to_url(short_url):
     user_agent = request.user_agent.string
     clean_browser=parse(user_agent).browser.family
     country = None
-    if ip_ad and ip_ad!="127.0.0.1":
-        try:
-            response = requests.get(f"http://ip-api.com/json/{ip_ad}", timeout=2)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "success":
-                    country = data["country"]
-        except Exception:
-            pass
-    elif ip_ad=="127.0.0.1":
-        country = "Localhost (Test)"
+    if ip_ad:
+        ip_obj=ipaddress.ip_address(ip_ad)
+        if ip_obj.is_private:
+            country = "Localhost (Test)"
+        else:
+            try:
+                response = requests.get(f"http://ip-api.com/json/{ip_ad}", timeout=2)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("status") == "success":
+                        country = data["country"]
+            except Exception:
+                pass
     try:
         validated_data= schemas.Analytics(short_url=redir.short_url, click_time=datetime.now(timezone.utc), country=country, browser=clean_browser)
         new_analytic=Analytics(short_url=validated_data.short_url, click_time=validated_data.click_time, country=validated_data.country, browser=validated_data.browser)
@@ -84,14 +86,14 @@ def analytics(short_url):
         func.count(Analytics.aID)
     ).filter_by(short_url=short_url).group_by(Analytics.country).all())
 
-    countries={country: count for country, count in countries_query}
+    countries={country if country is not None else "Unknown":  count for country, count in countries_query}
 
     browsers_query = db.session.query(
         Analytics.browser,
         func.count(Analytics.aID)
     ).filter_by(short_url=short_url).group_by(Analytics.browser).all()
 
-    browsers = {browser: count for browser, count in browsers_query}
+    browsers = {browser if browser is not None else "Unknown": count for browser, count in browsers_query}
 
     week_ago=datetime.now()-timedelta(days=7)
 
