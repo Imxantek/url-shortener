@@ -18,3 +18,8 @@ _DATABASE_URI=mysql+pymysql://root:@db:3306/url_db_
 2. Change the current folder to frontend <br> _cd frontend_</br>
 3. Run this command <br> _npm run dev_ </br>
 4. After this, click on the link from the cmd, or simply go to <br> _http://localhost:5173_</br>
+
+
+## to backup the db to url_db.sql simply run:
+docker exec url-shortener-db-1 mysqldump -u root url_db > url_db.sql
+<br>n your cmd
