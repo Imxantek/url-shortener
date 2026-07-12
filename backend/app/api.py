@@ -14,7 +14,9 @@ def redirect_to_url(short_url):
     redir=Urls.query.filter_by(short_url=short_url).first()
     if not redir:
         abort(404)
-    ip_ad=request.remote_addr
+    ip_ad = request.headers.get('CF-Connecting-IP') or request.headers.get('X-Forwarded-For') or request.remote_addr
+    if ip_ad and ',' in ip_ad:
+        ip_ad = ip_ad.split(',')[0].strip()
     user_agent = request.user_agent.string
     clean_browser=parse(user_agent).browser.family
     country = None
