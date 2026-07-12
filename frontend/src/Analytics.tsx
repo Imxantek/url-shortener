@@ -32,7 +32,7 @@ export function Analytics(){
     const navigate=useNavigate();
     const [data, setData]=useState<AnalyticsData | null>(null)
     const [error, setError]=useState(false);
-    const pgName="http://127.0.0.1:5000";
+    const pgName="https://api.lnks.website";
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const formatChartData = (record?: Record<string, number>) => {

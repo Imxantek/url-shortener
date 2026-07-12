@@ -8,7 +8,7 @@ def create_app():
     load_dotenv()
     CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "https://lnks.website"}})
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
