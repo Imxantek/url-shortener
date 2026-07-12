@@ -12,7 +12,7 @@ function Home() {
     useEffect(()=> {
         localStorage.setItem('saved_short_url', shortUrl);
     },[shortUrl]);
-    const pgName='http://127.0.0.1:5000';
+    const pgName='https://api.lnks.website';
     const [badResp, setBadResp]=useState(false);
 
   const handleShorten = async() => {
