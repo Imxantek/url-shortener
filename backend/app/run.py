@@ -1,5 +1,5 @@
-from __init__ import create_app
-from models import db
+from app import create_app
+from app.models import db
 import time
 app = create_app()
 

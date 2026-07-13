@@ -25,8 +25,6 @@ export interface AnalyticsData {
     click_times?: Record<string, number>;
 }
 
-
-
 export function Analytics(){
     const { shortCode }=useParams();
     const navigate=useNavigate();
@@ -88,7 +86,7 @@ export function Analytics(){
                         <XAxis dataKey="name"/>
                         <YAxis />
                         <Legend />
-                        <Tooltip formatter={(value: number) => [value, "Clicks"]}
+                        <Tooltip formatter={(value: any) => [value, "Clicks"]}
                         />
                     </LineChart>
                 </ResponsiveContainer>
@@ -116,20 +114,14 @@ export function Analytics(){
                         <YAxis dataKey="name" type="category" width={140}/>
                         <XAxis type="number"/>
                         <Legend />
-                        <Tooltip cursor={{fill: 'transparent'}} />
+                        <Tooltip cursor={{fill: 'transparent'}}
+                                 formatter={(value: any) => [value, "Clicks"]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
         )
 
     }
-
-
-
-
-
-
-
 
     useEffect(()=>{
         const fetchStats = async () =>{
@@ -152,9 +144,6 @@ export function Analytics(){
     }, [shortCode]);
     if(error) return(<><p>Error while accessing analytics</p><button onClick={()=>navigate('/')}>Go back</button></>)
     if(!data) return(<p>Loading...</p>)
-
-
-
 
     return(
         <div className="main-container">

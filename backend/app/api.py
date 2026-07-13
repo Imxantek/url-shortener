@@ -1,9 +1,9 @@
 from datetime import timedelta
 from flask import Blueprint, abort, redirect, request, jsonify
 from sqlalchemy import func
-from models import *
-from services.shortener import create_hash
-from schemas import schemas
+from app.models import *
+from app.services.shortener import create_hash
+from app.schemas import schemas
 from user_agents import parse
 import requests
 import ipaddress
