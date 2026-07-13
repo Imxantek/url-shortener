@@ -27,6 +27,7 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URI=mysql+pymysql://root:@db:3306/url_db
+      - FRONTEND_URL=${FRONTEND_URL}
 
   frontend:
     build: ./frontend
@@ -34,5 +35,7 @@ services:
       - "5173:5173"
     depends_on:
       - backend
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
 volumes:
   db_data:

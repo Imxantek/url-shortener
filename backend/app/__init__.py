@@ -8,7 +8,8 @@ def create_app():
     load_dotenv()
     CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__)
-    CORS(app, resources={r"/api/*": {"origins": "https://shortify.lnks.website"}})
+    frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+    CORS(app, resources={r"/api/*": {"origins": frontend_url}})
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False

@@ -12,7 +12,7 @@ function Home() {
     useEffect(()=> {
         localStorage.setItem('saved_short_url', shortUrl);
     },[shortUrl]);
-    const pgName='https://lnks.website';
+    const pgName=import.meta.env.VITE_API_URL;
     const [badResp, setBadResp]=useState(false);
 
   const handleShorten = async() => {
