@@ -1,6 +1,6 @@
 # Url-shortener
 Currently, the project is hosted under this domain:
-https://lnks.website
+https://shortify.lnks.website
 ## Project goals and description:
 Shortify is a modern, self-hosted URL shortener that not only creates tiny links but also provides in-depth analytics for every click. Built as a summer holiday programming project, it tracks user engagement including IP-based geolocation, browser types, and click-time trends.
 ### Key features:
