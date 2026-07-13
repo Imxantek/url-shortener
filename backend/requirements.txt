@@ -16,6 +16,7 @@ npm==0.1.1
 optional-django==0.1.0
 pydantic==2.13.4
 pydantic_core==2.46.4
+pytest==8.0.0
 PyMySQL==1.2.0
 python-dotenv==1.2.2
 pytz==2026.2

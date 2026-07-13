@@ -1,6 +1,6 @@
 import os
-from models import *
-from api import api_bp
+from app.models import *
+from app.api import api_bp
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
