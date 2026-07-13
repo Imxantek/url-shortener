@@ -2,24 +2,24 @@
 summer holiday programming project - the idea is to create a link shortener that also allows us to analyze user data such as ip address or country
 
 
-### How to setup the database:
-1. Run XAMPP and start apache and mysql
-2. Open your browser, and then go to http://localhost/phpmyadmin
-3. Create a new database and name it _url_db_
-4. Make sure your version of the project has an .env file with a correct connection chain
-<br>If not - create one, and type in: <br>
-_DATABASE_URI=mysql+pymysql://root:@db:3306/url_db_
-5. Run and create a virtual environment (venv)
-6. Install required packets by running <br> _uv pip install -r requirements.txt_<br>
-7. Create the tables by simply running <br> _python .\app\database.py_ 
-
-### How to setup the frontend page
-1. Install node.js
-2. Change the current folder to frontend <br> _cd frontend_</br>
-3. Run this command <br> _npm run dev_ </br>
-4. After this, click on the link from the cmd, or simply go to <br> _http://localhost:5173_</br>
-
-
-## to backup the db to url_db.sql simply run:
-docker exec url-shortener-db-1 mysqldump -u root url_db > url_db.sql
-<br>n your cmd
+## .env setup:
+1. Create a new file in the main project catalogue, and name it
+<br>_.env_<br>
+2. To set up the database, type in:
+<br>_DATABASE_URI=mysql+pymysql://root:@db:3306/url_db_<br>
+3. To set up the frontend, type in:
+<br>_FRONTEND_URL=http://localhost:5173_<br>
+for local hosting
+<br>__OR__<br>
+_FRONTEND_URL=(enter your frontend domain name here)_
+<br>for hosting on your public domain
+4. To set up the backend, type in:
+<br>_VITE_API_URL=http://localhost:5000_<br>
+for local hosting
+<br>__OR__<br>
+_VITE_API_URL=(enter your backend domain name here)_
+<br>for hosting on your public domain
+## db backup:
+To backup your database to url_db.sql file simply run:<br>
+_docker exec url-shortener-db-1 mysqldump -u root url_db > url_db.sql_
+<br>in your cmd

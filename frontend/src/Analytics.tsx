@@ -32,7 +32,7 @@ export function Analytics(){
     const navigate=useNavigate();
     const [data, setData]=useState<AnalyticsData | null>(null)
     const [error, setError]=useState(false);
-    const pgName="https://lnks.website";
+    const pgName=import.meta.env.VITE_API_URL;
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     const formatChartData = (record?: Record<string, number>) => {
